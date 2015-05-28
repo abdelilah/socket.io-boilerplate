@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Socket.IO Boilerplate Mobile</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Socket.IO Boilerplate Mobile</h1>
+
+    <div id="join-form">
+      <input class="form-control" type="text" id="txtRoomId"></input>
+    </div>
+
+    <div id="controls" style="display: none;">
+      <button class="btn btn-default" onclick="doSomething()">Do something</button>
+    </div>
+  </div>
+  
+
+
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    var room = null;
+
+    socket.on('connect', function(){
+      console.log('Connected');
+    });
+
+    socket.on('disconnect', function(){
+      console.log('Disconnected');
+    });
+
+    var doSomething = function(){
+      socket.emit('do', 'something');
+    };
+
+    $(function(){
+      $('#txtRoomId').keyup(function(){
+        var val = $(this).val().substr(0, 4);
+        $(this).val(val);
+
+        if(val.length == 4){
+          socket.emit('join_room', 'room_'+val, function(result){
+            if(result == true){
+              console.log('Joined successfully');
+
+              $('#join-form').hide();
+              $('#controls').fadeIn(300);
+
+              room = 'room_'+val;
+            }
+            else{
+              console.log('Failed to join');
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
